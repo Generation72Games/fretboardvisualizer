@@ -1,0 +1,11 @@
+{
+  "name": "fretboard-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A lightweight HTML, CSS, and JavaScript guitar fretboard visualizer.",
+  "scripts": {
+    "start": "node dev-server.js",
+    "check": "node --check app.js && node --check dev-server.js"
+  }
+}
+

@@ -1,0 +1,6 @@
+.chrome-profile/
+.edge-profile/
+app-screenshot.png
+node_modules/
+npm-debug.log*
+
