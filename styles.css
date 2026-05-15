@@ -145,6 +145,20 @@ h3 {
   accent-color: var(--root);
 }
 
+.string-filter {
+  grid-template-columns: repeat(3, max-content);
+  column-gap: 10px;
+  row-gap: 7px;
+}
+
+.string-filter > span {
+  grid-column: 1 / -1;
+}
+
+.string-filter input {
+  accent-color: var(--chord);
+}
+
 .is-hidden {
   display: none !important;
 }
@@ -357,6 +371,51 @@ button.active,
 
 .summary-notes {
   font-weight: 760;
+}
+
+.scale-theory {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(160px, max-content)) repeat(3, minmax(190px, 1fr));
+  gap: 8px;
+  align-items: stretch;
+  margin-top: 4px;
+}
+
+.theory-card {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  min-height: 64px;
+  padding: 9px 10px;
+  color: #172025;
+  border: 1px solid rgba(116, 132, 141, 0.42);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.46);
+}
+
+.theory-card-wide {
+  min-width: 0;
+}
+
+.theory-label {
+  color: #40515a;
+  font-size: 0.7rem;
+  font-weight: 820;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.theory-card strong {
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+
+.theory-card p {
+  margin: 0;
+  color: #293940;
+  font-size: 0.82rem;
+  line-height: 1.28;
 }
 
 .panel-heading {
@@ -821,6 +880,14 @@ input[type="range"] {
   .table-layout {
     grid-template-columns: 1fr;
   }
+
+  .scale-theory {
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+  }
+
+  .theory-card-wide {
+    grid-column: span 2;
+  }
 }
 
 @media (max-width: 760px) {
@@ -864,6 +931,15 @@ input[type="range"] {
 
   .sequence-cards {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .note-summary,
+  .scale-theory {
+    grid-template-columns: 1fr;
+  }
+
+  .theory-card-wide {
+    grid-column: auto;
   }
 
   .sequencer-grid {

@@ -32,6 +32,79 @@ const MODES = {
   Blues: [0, 3, 5, 6, 7, 10]
 };
 
+const SCALE_THEORY = {
+  Ionian: {
+    source: "Ionian is the major scale. It is the reference point for comparing most other scales and modes.",
+    sound: "Stable, bright, and resolved. It fits major-key melodies, I-IV-V progressions, and major triads or maj7 chords.",
+    practice: "Resolve phrases to the root and 3rd, then connect the major chord tones before filling in passing scale tones.",
+    parentOffset: 0,
+    parentMode: "1st mode"
+  },
+  Dorian: {
+    source: "Dorian is a minor mode with a natural 6. Compared with natural minor, that raised 6 gives it a smoother, funkier lift.",
+    sound: "Minor, but less dark than Aeolian. It works well over minor 7 chords, ii-V ideas, funk vamps, and modal rock grooves.",
+    practice: "Target the b3 and natural 6 so your ear hears Dorian instead of plain natural minor.",
+    parentOffset: 2,
+    parentMode: "2nd mode"
+  },
+  Phrygian: {
+    source: "Phrygian is a minor mode with a b2. The half step above the root is the sound that defines it.",
+    sound: "Dark, tense, and Spanish-leaning. It works over minor chords when the b2 is part of the desired color.",
+    practice: "Lean into the root-to-b2 movement, then resolve back to the root so the tension sounds intentional.",
+    parentOffset: 4,
+    parentMode: "3rd mode"
+  },
+  Lydian: {
+    source: "Lydian is a major mode with a #4. Compared with Ionian, the raised 4 removes the strong pull back down to the 3rd.",
+    sound: "Open, floating, and bright. It works well over maj7 and maj7#11 sounds when you want a less settled major color.",
+    practice: "Highlight the #4 against the root, then resolve to the 5th or 3rd to hear the Lydian color clearly.",
+    parentOffset: 5,
+    parentMode: "4th mode"
+  },
+  Mixolydian: {
+    source: "Mixolydian is a major mode with a b7. Compared with the major scale, lowering the 7th creates a dominant sound.",
+    sound: "Major, bluesy, and unresolved. It fits dominant 7 chords, rock riffs, country lines, and I-bVII-IV progressions.",
+    practice: "Target the 3rd and b7 together; that pair outlines the dominant 7 sound better than running the scale up and down.",
+    parentOffset: 7,
+    parentMode: "5th mode"
+  },
+  Aeolian: {
+    source: "Aeolian is the natural minor scale. It is the 6th mode of major and the basic sound of minor-key harmony.",
+    sound: "Dark, familiar, and resolved as minor. It fits minor progressions, minor triads, and min7 chords.",
+    practice: "Resolve phrases to the root and b3, then compare the b6 against Dorian's natural 6.",
+    parentOffset: 9,
+    parentMode: "6th mode"
+  },
+  Locrian: {
+    source: "Locrian is a diminished mode with a b2 and b5. The unstable b5 makes the tonic chord feel unresolved.",
+    sound: "Tense and unstable. It is most useful over m7b5 chords, especially in minor ii-V progressions.",
+    practice: "Outline the root, b3, b5, and b7 first, then add the b2 as color rather than treating it like a resting note.",
+    parentOffset: 11,
+    parentMode: "7th mode"
+  },
+  "Major Pentatonic": {
+    source: "Major pentatonic is the major scale with the 4th and 7th removed. Removing those half-step tensions makes it easy to phrase cleanly.",
+    sound: "Clear, melodic, and consonant. It fits major chords, country lines, pop melodies, and major-key improvising.",
+    practice: "Connect the root, 2, 3, 5, and 6 around nearby major chord shapes instead of treating it as one box.",
+    parentOffset: null,
+    parentMode: "major scale without 4 and 7"
+  },
+  "Minor Pentatonic": {
+    source: "Minor pentatonic is the natural minor scale with the 2nd and b6 removed. It keeps the strongest minor colors and avoids the softer tensions.",
+    sound: "Direct, bluesy, and guitar-friendly. It works over minor chords and is often used over blues and rock progressions.",
+    practice: "Find the root in each box, then bend or slide toward chord tones so the pattern becomes phrasing.",
+    parentOffset: null,
+    parentMode: "natural minor without 2 and b6"
+  },
+  Blues: {
+    source: "The blues scale is minor pentatonic plus the b5, often called the blue note. That added note creates tension between the 4th and 5th.",
+    sound: "Gritty, tense, and expressive. It works in blues, rock, funk, and many dominant or minor groove settings.",
+    practice: "Use the b5 as a passing tone between 4 and 5; let it create motion instead of landing on it every time.",
+    parentOffset: null,
+    parentMode: "minor pentatonic plus b5"
+  }
+};
+
 const CHORD_QUALITIES = {
   triad: {
     Major: [0, 4, 7],
@@ -50,6 +123,79 @@ const CHORD_QUALITIES = {
     Dim7: [0, 3, 6, 9],
     Min7b5: [0, 3, 6, 10],
     AugMaj7: [0, 4, 8, 11]
+  }
+};
+
+const CHORD_THEORY = {
+  Major: {
+    structure: "Major triad: root, major 3rd, perfect 5th.",
+    sound: "Stable, bright, and resolved. It is the basic major chord sound.",
+    practice: "Find each inversion and listen for the major 3rd because it defines the chord quality."
+  },
+  Minor: {
+    structure: "Minor triad: root, minor 3rd, perfect 5th.",
+    sound: "Stable but darker than major. It is the basic minor chord sound.",
+    practice: "Target the b3 first, then connect it to the root and 5th in each inversion."
+  },
+  Diminished: {
+    structure: "Diminished triad: root, minor 3rd, diminished 5th.",
+    sound: "Tense and unstable because the b5 wants to resolve.",
+    practice: "Treat the b5 as the color note and practice resolving it down to 4 or up to 5."
+  },
+  Augmented: {
+    structure: "Augmented triad: root, major 3rd, augmented 5th.",
+    sound: "Bright, tense, and floating because the raised 5th avoids a settled major sound.",
+    practice: "Compare the #5 against a normal 5th so the augmented color is easy to hear."
+  },
+  Sus2: {
+    structure: "Suspended 2 triad: root, 2nd, perfect 5th.",
+    sound: "Open and unresolved because the 3rd is replaced by the 2nd.",
+    practice: "Resolve the 2nd up to the 3rd to hear how the suspended sound becomes major."
+  },
+  Sus4: {
+    structure: "Suspended 4 triad: root, 4th, perfect 5th.",
+    sound: "Open and expectant because the 3rd is replaced by the 4th.",
+    practice: "Resolve the 4th down to the 3rd to hear the classic sus4 release."
+  },
+  Maj7: {
+    structure: "Major 7 chord: major triad plus major 7th.",
+    sound: "Smooth, bright, and sophisticated. Common in jazz, soul, pop, and major-key harmony.",
+    practice: "Learn where the 7th sits in each shape and resolve it gently to the root."
+  },
+  Dom7: {
+    structure: "Dominant 7 chord: major triad plus b7.",
+    sound: "Bluesy and directional. The 3rd and b7 create the dominant pull.",
+    practice: "Focus on the 3rd and b7 pair; that interval defines the dominant 7 sound."
+  },
+  Min7: {
+    structure: "Minor 7 chord: minor triad plus b7.",
+    sound: "Warm, dark, and relaxed. Common in minor harmony, funk, soul, and ii-V progressions.",
+    practice: "Connect the b3 and b7 across nearby shapes before adding passing tones."
+  },
+  MinMaj7: {
+    structure: "Minor major 7 chord: minor triad plus major 7th.",
+    sound: "Dark and cinematic because it combines a minor 3rd with a leading-tone 7th.",
+    practice: "Hear the half-step pull from the 7th to the root while keeping the b3 clear."
+  },
+  HalfDim7: {
+    structure: "Half-diminished 7 chord: diminished triad plus b7.",
+    sound: "Tense but less compressed than fully diminished. Often functions as ii in minor keys.",
+    practice: "Outline root, b3, b5, and b7 slowly so the b5 does not disappear in the shape."
+  },
+  Dim7: {
+    structure: "Diminished 7 chord: diminished triad plus diminished 7th.",
+    sound: "Very tense and symmetrical. It creates strong passing and leading-tone motion.",
+    practice: "Move the same shape in minor thirds to see the chord's symmetry on the neck."
+  },
+  Min7b5: {
+    structure: "Minor 7 flat 5 chord: root, b3, b5, b7.",
+    sound: "Tense and minor-colored. It is another common name for half-diminished 7.",
+    practice: "Compare it with Min7 by lowering only the 5th so the b5 color stands out."
+  },
+  AugMaj7: {
+    structure: "Augmented major 7 chord: augmented triad plus major 7th.",
+    sound: "Bright, unresolved, and modern because the #5 and 7 both create upward pull.",
+    practice: "Isolate the #5 and 7 against the root before practicing full voicings."
   }
 };
 
@@ -112,13 +258,20 @@ const els = {
   keySelect: document.querySelector("#keySelect"),
   modeControl: document.querySelector("#modeControl"),
   modeSelect: document.querySelector("#modeSelect"),
+  scaleStringControl: document.querySelector("#scaleStringControl"),
+  scaleStringCheckboxes: Array.from(document.querySelectorAll(".scale-string-checkbox")),
   chordTypeControl: document.querySelector("#chordTypeControl"),
   chordTypeSelect: document.querySelector("#chordTypeSelect"),
   chordControl: document.querySelector("#chordControl"),
   chordSelect: document.querySelector("#chordSelect"),
+  chordStringControl: document.querySelector("#chordStringControl"),
+  chordStringCheckboxes: Array.from(document.querySelectorAll(".chord-string-checkbox")),
+  chordDisplayControl: document.querySelector("#chordDisplayControl"),
+  showChordTheory: document.querySelector("#showChordTheory"),
   scaleDisplayControl: document.querySelector("#scaleDisplayControl"),
   showNoteNames: document.querySelector("#showNoteNames"),
   showIntervalsTop: document.querySelector("#showIntervalsTop"),
+  showTheory: document.querySelector("#showTheory"),
   showButton: document.querySelector("#showButton"),
   sequenceControl: document.querySelector("#sequenceControl"),
   sequenceSelect: document.querySelector("#sequenceSelect"),
@@ -204,17 +357,28 @@ function init() {
       appState.activeProgressionIndex = 0;
       appState.progressionHasBeenShown = false;
       renderCustomProgressionBuilder(getProgressionScaleChords(NOTE_TO_PC[els.keySelect.value]));
-      render();
     }
+
+    render();
   });
   els.showNoteNames.addEventListener("change", render);
   els.showIntervalsTop.addEventListener("change", render);
+  els.showTheory.addEventListener("change", render);
+  els.showChordTheory.addEventListener("change", render);
 
   [els.fretCountSelect, els.showScale, els.showChord, els.showIntervals].forEach(
     (element) => {
       element.addEventListener("change", render);
     }
   );
+
+  els.chordStringCheckboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", render);
+  });
+
+  els.scaleStringCheckboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", render);
+  });
 
   document.querySelectorAll(".rail-item").forEach((button) => {
     button.addEventListener("click", () => {
@@ -235,8 +399,11 @@ function updateHeaderControls(view) {
   const isChords = view === "chords";
 
   els.modeControl.classList.toggle("is-hidden", !isScales);
+  els.scaleStringControl.classList.toggle("is-hidden", !isScales);
   els.chordTypeControl.classList.toggle("is-hidden", !isChords);
   els.chordControl.classList.toggle("is-hidden", !isChords);
+  els.chordStringControl.classList.toggle("is-hidden", !isChords);
+  els.chordDisplayControl.classList.toggle("is-hidden", !isChords);
   els.scaleDisplayControl.classList.toggle("is-hidden", !isScales);
   els.progressionSourceControl.classList.toggle("is-hidden", !isProgressions);
   els.sequenceControl.classList.toggle("is-hidden", !(isProgressions && els.progressionSourceSelect.value === "common"));
@@ -279,6 +446,8 @@ function getState() {
   const chordRootPc = activeView === "progressions" && activeProgressionChord ? activeProgressionChord.rootPc : keyPc;
   const showIntervals = activeView === "scales" ? els.showIntervalsTop.checked : els.showIntervals.checked;
   const showNoteNames = activeView === "scales" ? els.showNoteNames.checked : true;
+  const selectedScaleStrings = getSelectedScaleStrings();
+  const selectedChordStrings = getSelectedChordStrings();
 
   return {
     activeView,
@@ -296,11 +465,20 @@ function getState() {
     showChord: activeView === "chords" || els.showChord.checked,
     showIntervals,
     showNoteNames,
+    showTheory: activeView === "scales" && els.showTheory.checked,
+    showChordTheory: activeView === "chords" && els.showChordTheory.checked,
+    selectedScaleStrings,
+    selectedChordStrings,
     scalePcs: scaleIntervals.map((interval) => normalizeInterval(keyPc + interval)),
     chordPcs: chordIntervals.map((interval) => normalizeInterval(chordRootPc + interval)),
     chordShapes:
       (activeView === "chords" || activeView === "progressions") && chordIntervals.length
-        ? buildChordShapes(chordRootPc, chordIntervals, Number(els.fretCountSelect.value))
+        ? buildChordShapes(
+            chordRootPc,
+            chordIntervals,
+            Number(els.fretCountSelect.value),
+            activeView === "chords" ? selectedChordStrings : getAllStringIndexes()
+          )
         : [],
     scaleIntervals,
     chordIntervals
@@ -309,6 +487,26 @@ function getState() {
 
 function getActiveView() {
   return document.querySelector(".rail-item.selected")?.dataset.view || "scales";
+}
+
+function getAllStringIndexes() {
+  return TUNING.map((_, index) => index);
+}
+
+function getSelectedScaleStrings() {
+  const selected = els.scaleStringCheckboxes
+    .filter((checkbox) => checkbox.checked)
+    .map((checkbox) => Number(checkbox.value));
+
+  return selected.length ? selected : getAllStringIndexes();
+}
+
+function getSelectedChordStrings() {
+  const selected = els.chordStringCheckboxes
+    .filter((checkbox) => checkbox.checked)
+    .map((checkbox) => Number(checkbox.value));
+
+  return selected.length ? selected : getAllStringIndexes();
 }
 
 function getProgressionScaleChords(keyPc) {
@@ -435,7 +633,8 @@ function renderNoteSummary(state) {
     });
     const notes = state.chordIntervals.map((interval) => pcToNote(state.keyPc + normalizeInterval(interval)));
 
-    els.noteSummary.innerHTML = renderTextSummary(`${state.keyName} ${state.chordName}`, intervals, notes);
+    els.noteSummary.innerHTML =
+      renderTextSummary(`${state.keyName} ${state.chordName}`, intervals, notes) + renderChordTheory(state);
     return;
   }
 
@@ -445,7 +644,7 @@ function renderNoteSummary(state) {
       `${state.keyName} ${state.scaleName}`,
       harmonized.map((chord) => chord.roman),
       harmonized.map((chord) => chord.name)
-    );
+    ) + renderScaleTheory(state);
     return;
   }
 
@@ -453,7 +652,7 @@ function renderNoteSummary(state) {
     `${state.keyName} ${state.scaleName}`,
     state.scaleIntervals.map((interval) => INTERVAL_LABELS[interval] || String(interval)),
     state.scaleIntervals.map((interval) => pcToNote(state.keyPc + interval))
-  );
+  ) + renderScaleTheory(state);
 }
 
 function renderTextSummary(title, topItems, bottomItems) {
@@ -465,6 +664,85 @@ function renderTextSummary(title, topItems, bottomItems) {
       <div class="summary-line summary-roman">${top}</div>
       <div class="summary-line summary-notes">${bottom}</div>
     </div>`;
+}
+
+function renderScaleTheory(state) {
+  if (!state.showTheory) return "";
+
+  const theory = SCALE_THEORY[state.scaleName];
+  if (!theory) return "";
+
+  const formula = state.scaleIntervals.map((interval) => INTERVAL_LABELS[interval] || String(interval)).join(" - ");
+  const notes = state.scaleIntervals.map((interval) => pcToNote(state.keyPc + interval)).join(" - ");
+  const source = getScaleSourceText(state, theory);
+
+  return `<div class="scale-theory" aria-label="${state.keyName} ${state.scaleName} theory">
+    <div class="theory-card">
+      <span class="theory-label">Formula</span>
+      <strong>${formula}</strong>
+    </div>
+    <div class="theory-card">
+      <span class="theory-label">Notes</span>
+      <strong>${notes}</strong>
+    </div>
+    <div class="theory-card theory-card-wide">
+      <span class="theory-label">Built From</span>
+      <p>${source}</p>
+    </div>
+    <div class="theory-card theory-card-wide">
+      <span class="theory-label">Sound</span>
+      <p>${theory.sound}</p>
+    </div>
+    <div class="theory-card theory-card-wide">
+      <span class="theory-label">Practice Focus</span>
+      <p>${theory.practice}</p>
+    </div>
+  </div>`;
+}
+
+function renderChordTheory(state) {
+  if (!state.showChordTheory) return "";
+
+  const theory = CHORD_THEORY[state.chordName];
+  if (!theory) return "";
+
+  const formula = state.chordIntervals
+    .map((interval) => INTERVAL_LABELS[interval] || INTERVAL_LABELS[normalizeInterval(interval)] || String(interval))
+    .join(" - ");
+  const notes = state.chordIntervals.map((interval) => pcToNote(state.keyPc + normalizeInterval(interval))).join(" - ");
+  const chordTypeLabel = state.chordType === "triad" ? "Triad" : "7th Chord";
+
+  return `<div class="scale-theory" aria-label="${state.keyName} ${state.chordName} theory">
+    <div class="theory-card">
+      <span class="theory-label">Formula</span>
+      <strong>${formula}</strong>
+    </div>
+    <div class="theory-card">
+      <span class="theory-label">Notes</span>
+      <strong>${notes}</strong>
+    </div>
+    <div class="theory-card theory-card-wide">
+      <span class="theory-label">Built From</span>
+      <p>${chordTypeLabel}. ${theory.structure}</p>
+    </div>
+    <div class="theory-card theory-card-wide">
+      <span class="theory-label">Sound</span>
+      <p>${theory.sound}</p>
+    </div>
+    <div class="theory-card theory-card-wide">
+      <span class="theory-label">Practice Focus</span>
+      <p>${theory.practice}</p>
+    </div>
+  </div>`;
+}
+
+function getScaleSourceText(state, theory) {
+  if (theory.parentOffset === null) {
+    return `${state.keyName} ${state.scaleName} is ${theory.parentMode}. ${theory.source}`;
+  }
+
+  const parentMajor = pcToNote(state.keyPc - theory.parentOffset);
+  return `${state.keyName} ${state.scaleName} is the ${theory.parentMode} of ${parentMajor} major. ${theory.source}`;
 }
 
 function buildDiatonicTriads(keyPc, scaleIntervals) {
@@ -498,12 +776,18 @@ function formatRomanNumeral(degreeIndex, quality) {
 }
 
 function renderStringLabels(state) {
-  els.stringLabels.innerHTML = TUNING.map((note) => {
+  els.stringLabels.innerHTML = TUNING.map((note, stringIndex) => {
     const pc = NOTE_TO_PC[note];
+    const isSelectedScaleString = state.activeView !== "scales" || state.selectedScaleStrings.includes(stringIndex);
+    const isSelectedChordString = state.activeView !== "chords" || state.selectedChordStrings.includes(stringIndex);
     const isRoot = pc === state.displayRootPc;
-    const isChord = (state.activeView === "chords" || state.activeView === "progressions") && state.chordPcs.includes(pc);
-    const isScale = state.activeView === "scales" && state.scalePcs.includes(pc);
-    const role = isRoot ? "root" : isChord ? "chord" : isScale ? "scale" : "";
+    const isChord =
+      (state.activeView === "chords" || state.activeView === "progressions") &&
+      isSelectedChordString &&
+      state.chordPcs.includes(pc);
+    const isScale = state.activeView === "scales" && isSelectedScaleString && state.scalePcs.includes(pc);
+    const role =
+      isRoot && isSelectedChordString && isSelectedScaleString ? "root" : isChord ? "chord" : isScale ? "scale" : "";
 
     return `<div class="string-label ${role}">${note}</div>`;
   }).join("");
@@ -547,6 +831,8 @@ function renderFretboard(state) {
   }
 
   TUNING.forEach((openNote, stringIndex) => {
+    if (state.activeView === "scales" && !state.selectedScaleStrings.includes(stringIndex)) return;
+
     const openPc = NOTE_TO_PC[openNote];
     for (let fret = 1; fret <= state.fretCount; fret += 1) {
       const pc = normalizeInterval(openPc + fret);
@@ -576,15 +862,15 @@ function renderFretboard(state) {
   els.fretboard.innerHTML = elements.join("");
 }
 
-function buildChordShapes(keyPc, chordIntervals, fretCount) {
+function buildChordShapes(keyPc, chordIntervals, fretCount, stringIndexes = getAllStringIndexes()) {
   const chordPcs = chordIntervals.map((interval) => normalizeInterval(keyPc + interval));
   const notesNeeded = chordPcs.length;
   const stringGroups = [];
   const shapes = [];
   const seen = new Set();
 
-  for (let start = 0; start <= TUNING.length - notesNeeded; start += 1) {
-    stringGroups.push(Array.from({ length: notesNeeded }, (_, offset) => start + offset));
+  for (let start = 0; start <= stringIndexes.length - notesNeeded; start += 1) {
+    stringGroups.push(Array.from({ length: notesNeeded }, (_, offset) => stringIndexes[start + offset]));
   }
 
   stringGroups.forEach((strings) => {

@@ -1,6 +1,7 @@
 .chrome-profile/
+.chrome-theory-test*/
 .edge-profile/
 app-screenshot.png
+app-theory-screenshot.png
 node_modules/
 npm-debug.log*
-

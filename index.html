@@ -23,6 +23,21 @@
           <select id="modeSelect"></select>
         </label>
 
+        <div class="option-group string-filter" id="scaleStringControl" aria-label="Scale string filters">
+          <span>Strings</span>
+          <label><input class="scale-string-checkbox" type="checkbox" value="0" checked> 1</label>
+          <label><input class="scale-string-checkbox" type="checkbox" value="1" checked> 2</label>
+          <label><input class="scale-string-checkbox" type="checkbox" value="2" checked> 3</label>
+          <label><input class="scale-string-checkbox" type="checkbox" value="3" checked> 4</label>
+          <label><input class="scale-string-checkbox" type="checkbox" value="4" checked> 5</label>
+          <label><input class="scale-string-checkbox" type="checkbox" value="5" checked> 6</label>
+        </div>
+
+        <label class="control is-hidden" id="chordControl">
+          <span>Chord Quality</span>
+          <select id="chordSelect"></select>
+        </label>
+
         <label class="control is-hidden" id="chordTypeControl">
           <span>Chord Type</span>
           <select id="chordTypeSelect">
@@ -31,15 +46,26 @@
           </select>
         </label>
 
-        <label class="control is-hidden" id="chordControl">
-          <span>Chord Quality</span>
-          <select id="chordSelect"></select>
-        </label>
+        <div class="option-group string-filter is-hidden" id="chordStringControl" aria-label="Chord string filters">
+          <span>Strings</span>
+          <label><input class="chord-string-checkbox" type="checkbox" value="0" checked> 1</label>
+          <label><input class="chord-string-checkbox" type="checkbox" value="1" checked> 2</label>
+          <label><input class="chord-string-checkbox" type="checkbox" value="2" checked> 3</label>
+          <label><input class="chord-string-checkbox" type="checkbox" value="3" checked> 4</label>
+          <label><input class="chord-string-checkbox" type="checkbox" value="4" checked> 5</label>
+          <label><input class="chord-string-checkbox" type="checkbox" value="5" checked> 6</label>
+        </div>
+
+        <div class="option-group is-hidden" id="chordDisplayControl" aria-label="Chord display options">
+          <span>Display</span>
+          <label><input id="showChordTheory" type="checkbox"> Show theory</label>
+        </div>
 
         <div class="option-group" id="scaleDisplayControl" aria-label="Scale display options">
           <span>Display</span>
           <label><input id="showNoteNames" type="checkbox" checked> Notes</label>
           <label><input id="showIntervalsTop" type="checkbox"> Intervals</label>
+          <label><input id="showTheory" type="checkbox"> Show theory</label>
         </div>
 
         <label class="control is-hidden" id="progressionSourceControl">
