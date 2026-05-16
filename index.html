@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fretboard Engine</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar" id="topbar">
+        <div class="brand">
+          <h1>Fretboard Engine</h1>
+        </div>
+
+        <label class="control" id="keyControl">
+          <span>Key</span>
+          <select id="keySelect"></select>
+        </label>
+
+        <label class="control" id="modeControl">
+          <span>Mode</span>
+          <select id="modeSelect"></select>
+        </label>
+
+        <div class="option-group string-filter" id="scaleStringControl" aria-label="Scale string filters">
+          <span>Strings</span>
+          <label><input class="scale-string-checkbox" type="checkbox" value="0" checked> 1</label>
+          <label><input class="scale-string-checkbox" type="checkbox" value="1" checked> 2</label>
+          <label><input class="scale-string-checkbox" type="checkbox" value="2" checked> 3</label>
+          <label><input class="scale-string-checkbox" type="checkbox" value="3" checked> 4</label>
+          <label><input class="scale-string-checkbox" type="checkbox" value="4" checked> 5</label>
+          <label><input class="scale-string-checkbox" type="checkbox" value="5" checked> 6</label>
+        </div>
+
+        <label class="control is-hidden" id="chordControl">
+          <span>Chord Quality</span>
+          <select id="chordSelect"></select>
+        </label>
+
+        <label class="control is-hidden" id="chordTypeControl">
+          <span>Chord Type</span>
+          <select id="chordTypeSelect">
+            <option value="triad">Triads</option>
+            <option value="seventh">7th Chords</option>
+          </select>
+        </label>
+
+        <div class="option-group string-filter is-hidden" id="chordStringControl" aria-label="Chord string filters">
+          <span>Strings</span>
+          <label><input class="chord-string-checkbox" type="checkbox" value="0" checked> 1</label>
+          <label><input class="chord-string-checkbox" type="checkbox" value="1" checked> 2</label>
+          <label><input class="chord-string-checkbox" type="checkbox" value="2" checked> 3</label>
+          <label><input class="chord-string-checkbox" type="checkbox" value="3" checked> 4</label>
+          <label><input class="chord-string-checkbox" type="checkbox" value="4" checked> 5</label>
+          <label><input class="chord-string-checkbox" type="checkbox" value="5" checked> 6</label>
+        </div>
+
+        <div class="option-group is-hidden" id="chordDisplayControl" aria-label="Chord display options">
+          <span>Display</span>
+          <label><input id="showChordTheory" type="checkbox"> Show theory</label>
+        </div>
+
+        <div class="option-group" id="scaleDisplayControl" aria-label="Scale display options">
+          <span>Display</span>
+          <label><input id="showNoteNames" type="checkbox" checked> Notes</label>
+          <label><input id="showIntervalsTop" type="checkbox"> Intervals</label>
+          <label><input id="showTheory" type="checkbox"> Show theory</label>
+        </div>
+
+        <label class="control is-hidden" id="progressionSourceControl">
+          <span>Progression</span>
+          <select id="progressionSourceSelect">
+            <option value="custom">Make my own</option>
+            <option value="common">Use Common</option>
+          </select>
+        </label>
+
+        <label class="control control-wide is-hidden" id="sequenceControl">
+          <span>Common</span>
+          <select id="sequenceSelect"></select>
+        </label>
+
+        <button class="show-button" id="showButton" type="button">Show</button>
+
+      </header>
+
+      <div class="workspace">
+        <aside class="rail" aria-label="Primary views">
+          <button class="rail-item selected" data-view="scales">
+            <span class="rail-icon">N</span>
+            <span>Scales</span>
+          </button>
+          <button class="rail-item" data-view="chords">
+            <span class="rail-icon">III</span>
+            <span>Chords</span>
+          </button>
+          <button class="rail-item" data-view="progressions">
+            <span class="rail-icon">1-4</span>
+            <span>Progressions</span>
+          </button>
+          <button class="rail-item" data-view="arpeggios">
+            <span class="rail-icon">ARP</span>
+            <span>Arpeggios</span>
+          </button>
+          <button class="rail-item" data-view="tuner">
+            <span class="rail-icon">Y</span>
+            <span>Tuner</span>
+          </button>
+          <button class="rail-item" data-view="settings">
+            <span class="rail-icon">EQ</span>
+            <span>Settings</span>
+          </button>
+        </aside>
+
+        <section class="main-panel fretboard-panel" aria-labelledby="fretboardTitle">
+          <div class="panel-heading">
+            <h2 id="fretboardTitle">Fretboard</h2>
+            <div class="view-options is-hidden">
+              <label><input id="showScale" type="checkbox" checked> Scale</label>
+              <label><input id="showChord" type="checkbox"> Chord</label>
+              <label><input id="showIntervals" type="checkbox"> Intervals</label>
+            </div>
+          </div>
+          <div class="note-summary" id="noteSummary" aria-label="Generated notes"></div>
+          <div class="custom-progression is-hidden" id="customProgressionBuilder" aria-label="Custom progression builder"></div>
+          <div class="fretboard-wrap">
+            <div class="string-labels" id="stringLabels"></div>
+            <div class="fretboard" id="fretboard" aria-label="Interactive fretboard visualization"></div>
+            <div class="fret-numbers" id="fretNumbers"></div>
+          </div>
+          <div class="legend" id="legend"></div>
+        </section>
+
+        <section class="main-panel sequencer-panel is-hidden" id="sequencerPanel" aria-labelledby="sequencerTitle">
+          <div class="panel-heading">
+            <h2 id="sequencerTitle">Progression Sequencer</h2>
+            <button class="small-button" id="editSequence">Edit</button>
+          </div>
+
+          <div class="sequencer-grid">
+            <div class="sequence-cards" id="sequenceCards"></div>
+          </div>
+        </section>
+
+        <section class="main-panel table-panel" aria-labelledby="notesTitle">
+          <div class="panel-heading">
+            <h2 id="notesTitle">Notes / Intervals <span id="contextLabel"></span></h2>
+          </div>
+          <div class="table-layout">
+            <table>
+              <thead>
+                <tr>
+                  <th>Degree</th>
+                  <th>Interval</th>
+                  <th>Note</th>
+                  <th>Function</th>
+                </tr>
+              </thead>
+              <tbody id="intervalRows"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <footer class="statusbar">
+        <span>Tuning: <strong>E A D G B E</strong></span>
+        <span>Capo: <strong>None</strong></span>
+        <label>Fretboard:
+          <select id="fretCountSelect">
+            <option value="12">12</option>
+            <option value="15">15</option>
+            <option value="24" selected>24</option>
+          </select>
+        </label>
+        <span class="audio">Audio: <span class="speaker">)))</span><input type="range" min="0" max="100" value="65"></span>
+        <span>MIDI In: <strong>Off</strong></span>
+      </footer>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
