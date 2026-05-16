@@ -18,6 +18,16 @@ const NOTE_TO_PC = {
   Bb: 10,
   B: 11
 };
+const NATURAL_NOTE_PCS = {
+  C: 0,
+  D: 2,
+  E: 4,
+  F: 5,
+  G: 7,
+  A: 9,
+  B: 11
+};
+const LETTERS = ["C", "D", "E", "F", "G", "A", "B"];
 
 const MODES = {
   Ionian: [0, 2, 4, 5, 7, 9, 11],
@@ -246,6 +256,31 @@ const INTERVAL_LABELS = {
   11: "7",
   14: "9"
 };
+const SCALE_DEGREES = {
+  Ionian: [1, 2, 3, 4, 5, 6, 7],
+  Dorian: [1, 2, 3, 4, 5, 6, 7],
+  Phrygian: [1, 2, 3, 4, 5, 6, 7],
+  Lydian: [1, 2, 3, 4, 5, 6, 7],
+  Mixolydian: [1, 2, 3, 4, 5, 6, 7],
+  Aeolian: [1, 2, 3, 4, 5, 6, 7],
+  Locrian: [1, 2, 3, 4, 5, 6, 7],
+  "Major Pentatonic": [1, 2, 3, 5, 6],
+  "Minor Pentatonic": [1, 3, 4, 5, 7],
+  Blues: [1, 3, 4, 5, 5, 7]
+};
+const CHORD_INTERVAL_DEGREES = {
+  0: 1,
+  2: 2,
+  3: 3,
+  4: 3,
+  5: 4,
+  6: 5,
+  7: 5,
+  8: 5,
+  9: 7,
+  10: 7,
+  11: 7
+};
 
 const FUNCTIONS = ["Tonic", "Supertonic", "Mediant", "Subdominant", "Dominant", "Submediant", "Leading Tone"];
 const TUNING = ["E", "B", "G", "D", "A", "E"];
@@ -303,6 +338,50 @@ function pcToNote(pc) {
   return NOTES_SHARP[((pc % 12) + 12) % 12];
 }
 
+function getRootLetter(noteName) {
+  return noteName[0];
+}
+
+function getLetterForDegree(rootName, degree) {
+  const rootIndex = LETTERS.indexOf(getRootLetter(rootName));
+  return LETTERS[(rootIndex + degree - 1) % LETTERS.length];
+}
+
+function accidentalForOffset(offset) {
+  if (offset === -2) return "bb";
+  if (offset === -1) return "b";
+  if (offset === 0) return "";
+  if (offset === 1) return "#";
+  if (offset === 2) return "##";
+  return "";
+}
+
+function spellIntervalFromRoot(rootName, interval, degree) {
+  const targetPc = normalizeInterval(NOTE_TO_PC[rootName] + interval);
+  const targetLetter = getLetterForDegree(rootName, degree);
+  let offset = normalizeInterval(targetPc - NATURAL_NOTE_PCS[targetLetter]);
+
+  if (offset > 6) offset -= 12;
+
+  return `${targetLetter}${accidentalForOffset(offset)}`;
+}
+
+function spellScale(rootName, scaleName) {
+  return MODES[scaleName].map((interval, index) =>
+    spellIntervalFromRoot(rootName, interval, SCALE_DEGREES[scaleName][index])
+  );
+}
+
+function spellChord(rootName, chordIntervals) {
+  return chordIntervals.map((interval) =>
+    spellIntervalFromRoot(rootName, normalizeInterval(interval), CHORD_INTERVAL_DEGREES[normalizeInterval(interval)])
+  );
+}
+
+function buildSpellingMap(pcs, names) {
+  return new Map(pcs.map((pc, index) => [pc, names[index]]));
+}
+
 function normalizeInterval(interval) {
   return ((interval % 12) + 12) % 12;
 }
@@ -348,7 +427,7 @@ function init() {
     appState.progressionHasBeenShown = false;
 
     updateHeaderControls("progressions");
-    renderCustomProgressionBuilder(getProgressionScaleChords(NOTE_TO_PC[els.keySelect.value]));
+    renderCustomProgressionBuilder(getProgressionScaleChords(NOTE_TO_PC[els.keySelect.value], els.keySelect.value));
     render();
   });
   els.keySelect.addEventListener("change", () => {
@@ -356,7 +435,7 @@ function init() {
       appState.progressionChords = [];
       appState.activeProgressionIndex = 0;
       appState.progressionHasBeenShown = false;
-      renderCustomProgressionBuilder(getProgressionScaleChords(NOTE_TO_PC[els.keySelect.value]));
+      renderCustomProgressionBuilder(getProgressionScaleChords(NOTE_TO_PC[els.keySelect.value], els.keySelect.value));
     }
 
     render();
@@ -427,7 +506,7 @@ function updateHeaderControls(view) {
     els.showScale.checked = false;
     els.showChord.checked = true;
     els.showIntervals.checked = false;
-    renderCustomProgressionBuilder(getProgressionScaleChords(NOTE_TO_PC[els.keySelect.value]));
+    renderCustomProgressionBuilder(getProgressionScaleChords(NOTE_TO_PC[els.keySelect.value], els.keySelect.value));
   }
 }
 
@@ -448,6 +527,12 @@ function getState() {
   const showNoteNames = activeView === "scales" ? els.showNoteNames.checked : true;
   const selectedScaleStrings = getSelectedScaleStrings();
   const selectedChordStrings = getSelectedChordStrings();
+  const scalePcs = scaleIntervals.map((interval) => normalizeInterval(keyPc + interval));
+  const chordPcs = chordIntervals.map((interval) => normalizeInterval(chordRootPc + interval));
+  const scaleNoteNames = spellScale(els.keySelect.value, els.modeSelect.value);
+  const chordRootName =
+    activeView === "progressions" && activeProgressionChord ? activeProgressionChord.rootName : els.keySelect.value;
+  const chordNoteNames = spellChord(chordRootName, chordIntervals);
 
   return {
     activeView,
@@ -469,8 +554,12 @@ function getState() {
     showChordTheory: activeView === "chords" && els.showChordTheory.checked,
     selectedScaleStrings,
     selectedChordStrings,
-    scalePcs: scaleIntervals.map((interval) => normalizeInterval(keyPc + interval)),
-    chordPcs: chordIntervals.map((interval) => normalizeInterval(chordRootPc + interval)),
+    scalePcs,
+    chordPcs,
+    scaleNoteNames,
+    chordNoteNames,
+    scaleSpellingMap: buildSpellingMap(scalePcs, scaleNoteNames),
+    chordSpellingMap: buildSpellingMap(chordPcs, chordNoteNames),
     chordShapes:
       (activeView === "chords" || activeView === "progressions") && chordIntervals.length
         ? buildChordShapes(
@@ -509,14 +598,16 @@ function getSelectedChordStrings() {
   return selected.length ? selected : getAllStringIndexes();
 }
 
-function getProgressionScaleChords(keyPc) {
+function getProgressionScaleChords(keyPc, keyName = pcToNote(keyPc)) {
   return MODES.Ionian.map((interval, index) => {
     const quality = IONIAN_TRIAD_QUALITIES[index];
+    const rootName = spellIntervalFromRoot(keyName, interval, index + 1);
     return {
       degree: index + 1,
       roman: IONIAN_ROMANS[index],
       rootPc: normalizeInterval(keyPc + interval),
-      name: `${pcToNote(keyPc + interval)}${quality === "Major" ? "" : quality === "Minor" ? "m" : "dim"}`,
+      rootName,
+      name: `${rootName}${quality === "Major" ? "" : quality === "Minor" ? "m" : "dim"}`,
       quality
     };
   });
@@ -524,32 +615,42 @@ function getProgressionScaleChords(keyPc) {
 
 function updateProgressionFromControls() {
   const keyPc = NOTE_TO_PC[els.keySelect.value];
+  const keyName = els.keySelect.value;
 
   appState.progressionChords =
     els.progressionSourceSelect.value === "common"
-      ? buildCommonProgression(keyPc, SEQUENCES[els.sequenceSelect.value])
+      ? buildCommonProgression(keyPc, keyName, SEQUENCES[els.sequenceSelect.value])
       : buildCustomProgression(keyPc);
   appState.activeProgressionIndex = 0;
   appState.progressionHasBeenShown = true;
 }
 
-function buildCommonProgression(keyPc, romans) {
+function buildCommonProgression(keyPc, keyName, romans) {
   return romans.map((roman) => {
     const rootPc = normalizeInterval(keyPc + (ROMAN_DEGREES[roman] ?? 0));
     const lowerRoman = roman.toLowerCase();
     const quality = lowerRoman.includes("dim") || lowerRoman.includes("vii") ? "Diminished" : roman === lowerRoman ? "Minor" : "Major";
+    const rootName = spellIntervalFromRoot(keyName, ROMAN_DEGREES[roman] ?? 0, getRomanDegree(roman));
 
     return {
       roman,
       rootPc,
       quality,
-      name: `${pcToNote(rootPc)}${quality === "Major" ? "" : quality === "Minor" ? "m" : "dim"}`
+      rootName,
+      name: `${rootName}${quality === "Major" ? "" : quality === "Minor" ? "m" : "dim"}`
     };
   });
 }
 
+function getRomanDegree(roman) {
+  const normalized = roman.replace(/^b/, "").replace(/dim$/i, "");
+  const match = normalized.match(/[ivx]+/i)?.[0]?.toUpperCase();
+  const degreeMap = { I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7 };
+  return degreeMap[match] || 1;
+}
+
 function buildCustomProgression(keyPc) {
-  const scaleChords = getProgressionScaleChords(keyPc);
+  const scaleChords = getProgressionScaleChords(keyPc, els.keySelect.value);
   const selected = [];
 
   els.customProgressionBuilder.querySelectorAll("select[data-degree]").forEach((select) => {
@@ -619,7 +720,7 @@ function renderNoteSummary(state) {
       const normalized = normalizeInterval(interval);
       return INTERVAL_LABELS[interval] || INTERVAL_LABELS[normalized] || String(interval);
     });
-    const notes = state.chordIntervals.map((interval) => pcToNote(chord.rootPc + normalizeInterval(interval)));
+    const notes = state.chordNoteNames;
     const title = `${chord.roman} ${chord.name}`;
 
     els.noteSummary.innerHTML = renderTextSummary(title, intervals, notes);
@@ -631,7 +732,7 @@ function renderNoteSummary(state) {
       const normalized = normalizeInterval(interval);
       return INTERVAL_LABELS[interval] || INTERVAL_LABELS[normalized] || String(interval);
     });
-    const notes = state.chordIntervals.map((interval) => pcToNote(state.keyPc + normalizeInterval(interval)));
+    const notes = state.chordNoteNames;
 
     els.noteSummary.innerHTML =
       renderTextSummary(`${state.keyName} ${state.chordName}`, intervals, notes) + renderChordTheory(state);
@@ -639,7 +740,7 @@ function renderNoteSummary(state) {
   }
 
   if (state.scaleIntervals.length === 7) {
-    const harmonized = buildDiatonicTriads(state.keyPc, state.scaleIntervals);
+    const harmonized = buildDiatonicTriads(state.keyName, state.keyPc, state.scaleIntervals);
     els.noteSummary.innerHTML = renderTextSummary(
       `${state.keyName} ${state.scaleName}`,
       harmonized.map((chord) => chord.roman),
@@ -651,7 +752,7 @@ function renderNoteSummary(state) {
   els.noteSummary.innerHTML = renderTextSummary(
     `${state.keyName} ${state.scaleName}`,
     state.scaleIntervals.map((interval) => INTERVAL_LABELS[interval] || String(interval)),
-    state.scaleIntervals.map((interval) => pcToNote(state.keyPc + interval))
+    state.scaleNoteNames
   ) + renderScaleTheory(state);
 }
 
@@ -673,7 +774,7 @@ function renderScaleTheory(state) {
   if (!theory) return "";
 
   const formula = state.scaleIntervals.map((interval) => INTERVAL_LABELS[interval] || String(interval)).join(" - ");
-  const notes = state.scaleIntervals.map((interval) => pcToNote(state.keyPc + interval)).join(" - ");
+  const notes = state.scaleNoteNames.join(" - ");
   const source = getScaleSourceText(state, theory);
 
   return `<div class="scale-theory" aria-label="${state.keyName} ${state.scaleName} theory">
@@ -709,7 +810,7 @@ function renderChordTheory(state) {
   const formula = state.chordIntervals
     .map((interval) => INTERVAL_LABELS[interval] || INTERVAL_LABELS[normalizeInterval(interval)] || String(interval))
     .join(" - ");
-  const notes = state.chordIntervals.map((interval) => pcToNote(state.keyPc + normalizeInterval(interval))).join(" - ");
+  const notes = state.chordNoteNames.join(" - ");
   const chordTypeLabel = state.chordType === "triad" ? "Triad" : "7th Chord";
 
   return `<div class="scale-theory" aria-label="${state.keyName} ${state.chordName} theory">
@@ -741,11 +842,17 @@ function getScaleSourceText(state, theory) {
     return `${state.keyName} ${state.scaleName} is ${theory.parentMode}. ${theory.source}`;
   }
 
-  const parentMajor = pcToNote(state.keyPc - theory.parentOffset);
+  const parentMajor = spellIntervalFromRoot(state.keyName, normalizeInterval(-theory.parentOffset), getScaleParentDegree(theory.parentOffset));
   return `${state.keyName} ${state.scaleName} is the ${theory.parentMode} of ${parentMajor} major. ${theory.source}`;
 }
 
-function buildDiatonicTriads(keyPc, scaleIntervals) {
+function getScaleParentDegree(parentOffset) {
+  const interval = normalizeInterval(-parentOffset);
+  const degreeMap = { 0: 1, 1: 2, 3: 3, 5: 4, 7: 5, 8: 6, 10: 7 };
+  return degreeMap[interval] || 1;
+}
+
+function buildDiatonicTriads(keyName, keyPc, scaleIntervals) {
   return scaleIntervals.map((rootInterval, degreeIndex) => {
     const rootPc = normalizeInterval(keyPc + rootInterval);
     const thirdInterval = normalizeInterval(scaleIntervals[(degreeIndex + 2) % 7] - rootInterval);
@@ -755,7 +862,7 @@ function buildDiatonicTriads(keyPc, scaleIntervals) {
 
     return {
       roman,
-      name: `${pcToNote(rootPc)}${quality.suffix}`
+      name: `${spellIntervalFromRoot(keyName, rootInterval, degreeIndex + 1)}${quality.suffix}`
     };
   });
 }
@@ -848,13 +955,13 @@ function renderFretboard(state) {
       const x = (fret - 0.5) * fretWidth;
       const y = topPad + stringIndex * stringGap;
       const intervalFromRoot = normalizeInterval(pc - state.keyPc);
-      const noteLabel = state.showNoteNames ? pcToNote(pc) : "";
+      const noteLabel = state.showNoteNames ? state.scaleSpellingMap.get(pc) || pcToNote(pc) : "";
       const intervalLabel = state.showIntervals ? INTERVAL_LABELS[intervalFromRoot] || intervalFromRoot : "";
       const label = [noteLabel, intervalLabel].filter(Boolean).join("/");
       const role = isRoot ? "root" : showAsChord ? "chord" : "scale";
 
       elements.push(
-        `<div class="note-dot ${role}" style="left:${x}px; top:${y}px" title="${pcToNote(pc)} fret ${fret}">${label}</div>`
+        `<div class="note-dot ${role}" style="left:${x}px; top:${y}px" title="${state.scaleSpellingMap.get(pc) || pcToNote(pc)} fret ${fret}">${label}</div>`
       );
     }
   });
@@ -950,7 +1057,7 @@ function renderChordShapes(state, elements, topPad, stringGap, fretWidth) {
       const role = note.pc === state.displayRootPc ? "root" : "chord";
 
       elements.push(
-        `<div class="note-dot ${role}" style="left:${x}px; top:${y}px" title="${pcToNote(note.pc)} fret ${note.fret}">${pcToNote(note.pc)}</div>`
+        `<div class="note-dot ${role}" style="left:${x}px; top:${y}px" title="${state.chordSpellingMap.get(note.pc) || pcToNote(note.pc)} fret ${note.fret}">${state.chordSpellingMap.get(note.pc) || pcToNote(note.pc)}</div>`
       );
     });
   });
@@ -1023,9 +1130,10 @@ function renderSequence(state) {
     .map((roman, index) => {
       const rootPc = normalizeInterval(state.keyPc + ROMAN_DEGREES[roman]);
       const chordQuality = roman === roman.toLowerCase() ? "min" : state.chordName;
+      const rootName = spellIntervalFromRoot(state.keyName, ROMAN_DEGREES[roman], getRomanDegree(roman));
       return `<article class="sequence-card ${index === 0 ? "active" : ""}">
         <span class="index">${index + 1}</span>
-        <span class="chord-name">${pcToNote(rootPc)} ${chordQuality}</span>
+        <span class="chord-name">${rootName} ${chordQuality}</span>
         <span class="roman">${roman}</span>
       </article>`;
     })
@@ -1049,7 +1157,7 @@ function renderTables(state) {
         return `<tr>
           <td>${index + 1}</td>
           <td>${INTERVAL_LABELS[interval] || INTERVAL_LABELS[normalized] || interval}</td>
-          <td>${pcToNote(state.activeProgressionChord.rootPc + normalized)}</td>
+          <td>${state.chordNoteNames[index]}</td>
           <td>Chord Tone</td>
         </tr>`;
       })
@@ -1063,7 +1171,7 @@ function renderTables(state) {
   els.contextLabel.textContent = `(${state.keyName} ${state.scaleName})`;
   els.intervalRows.innerHTML = intervals
     .map((interval, index) => {
-      const note = pcToNote(state.keyPc + interval);
+      const note = state.scaleNoteNames[index];
       return `<tr>
         <td>${index + 1}</td>
         <td>${INTERVAL_LABELS[interval] || interval}</td>
