@@ -581,6 +581,7 @@ function updateHeaderControls(view) {
   els.sequenceControl.classList.toggle("is-hidden", !(isProgressions && els.progressionSourceSelect.value === "common"));
   els.customProgressionBuilder.classList.toggle("is-hidden", !(isProgressions && els.progressionSourceSelect.value === "custom"));
   els.sequencerPanel.classList.toggle("is-hidden", !isProgressions);
+  els.showButton.classList.toggle("is-hidden", isChords);
   els.topbar.classList.toggle("progression-mode", isProgressions);
   els.topbar.classList.toggle("chord-mode", isChords);
 

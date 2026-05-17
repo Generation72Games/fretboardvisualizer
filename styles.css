@@ -142,7 +142,7 @@ h3 {
   display: grid;
   grid-template-columns: minmax(240px, 1fr) auto minmax(280px, 1.15fr);
   gap: 18px;
-  align-items: end;
+  align-items: start;
 }
 
 .button-control {
