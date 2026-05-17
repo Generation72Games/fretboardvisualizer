@@ -125,7 +125,6 @@ const CHORD_QUALITIES = {
     Sus4: [0, 5, 7]
   },
   seventh: {
-    Major: [0, 4, 7],
     Maj7: [0, 4, 7, 11],
     Dom7: [0, 4, 7, 10],
     Min7: [0, 3, 7, 10],
@@ -401,7 +400,8 @@ function init() {
 
   els.chordTypeSelect.addEventListener("change", () => {
     const qualities = Object.keys(CHORD_QUALITIES[els.chordTypeSelect.value]);
-    fillSelect(els.chordSelect, qualities, qualities.includes("Major") ? "Major" : qualities[0]);
+    const defaultQuality = els.chordTypeSelect.value === "triad" ? "Major" : qualities[0];
+    fillSelect(els.chordSelect, qualities, defaultQuality);
     render();
   });
 
