@@ -46,6 +46,23 @@
           </select>
         </label>
 
+        <div class="chord-button-controls is-hidden" id="chordButtonControls" aria-label="Chord controls">
+          <div class="button-control">
+            <span>Key</span>
+            <div class="mini-button-grid key-button-grid" id="chordKeyButtons"></div>
+          </div>
+
+          <div class="button-control">
+            <span>Family</span>
+            <div class="mini-button-row" id="chordTypeButtons"></div>
+          </div>
+
+          <div class="button-control button-control-wide">
+            <span>Chord</span>
+            <div class="mini-button-grid quality-button-grid" id="chordQualityButtons"></div>
+          </div>
+        </div>
+
         <div class="option-group string-filter is-hidden" id="chordStringControl" aria-label="Chord string filters">
           <span>Strings</span>
           <label><input class="chord-string-checkbox" type="checkbox" value="0" checked> 1</label>

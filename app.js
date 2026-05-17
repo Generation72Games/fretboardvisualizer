@@ -299,6 +299,10 @@ const els = {
   chordTypeSelect: document.querySelector("#chordTypeSelect"),
   chordControl: document.querySelector("#chordControl"),
   chordSelect: document.querySelector("#chordSelect"),
+  chordButtonControls: document.querySelector("#chordButtonControls"),
+  chordKeyButtons: document.querySelector("#chordKeyButtons"),
+  chordTypeButtons: document.querySelector("#chordTypeButtons"),
+  chordQualityButtons: document.querySelector("#chordQualityButtons"),
   chordStringControl: document.querySelector("#chordStringControl"),
   chordStringCheckboxes: Array.from(document.querySelectorAll(".chord-string-checkbox")),
   chordDisplayControl: document.querySelector("#chordDisplayControl"),
@@ -332,6 +336,28 @@ const appState = {
   progressionChords: [],
   activeProgressionIndex: 0,
   progressionHasBeenShown: false
+};
+
+const CHORD_TYPE_LABELS = {
+  triad: "Triads",
+  seventh: "7th"
+};
+
+const CHORD_QUALITY_LABELS = {
+  Major: "Major",
+  Minor: "Minor",
+  Diminished: "Dim",
+  Augmented: "Aug",
+  Sus2: "Sus2",
+  Sus4: "Sus4",
+  Maj7: "Maj7",
+  Dom7: "Dom7",
+  Min7: "Min7",
+  MinMaj7: "MinMaj7",
+  HalfDim7: "HalfDim7",
+  Dim7: "Dim7",
+  Min7b5: "Min7b5",
+  AugMaj7: "AugMaj7"
 };
 
 function pcToNote(pc) {
@@ -406,6 +432,27 @@ function syncChordQualityOptions() {
   fillSelect(els.chordSelect, qualities, selectedQuality);
 }
 
+function renderChordButtonControls() {
+  els.chordKeyButtons.innerHTML = NOTES_SHARP.map(
+    (note) =>
+      `<button class="mini-button ${note === els.keySelect.value ? "active" : ""}" data-chord-key="${note}" type="button">${note}</button>`
+  ).join("");
+
+  els.chordTypeButtons.innerHTML = Object.keys(CHORD_QUALITIES)
+    .map(
+      (type) =>
+        `<button class="mini-button ${type === els.chordTypeSelect.value ? "active" : ""}" data-chord-type="${type}" type="button">${CHORD_TYPE_LABELS[type]}</button>`
+    )
+    .join("");
+
+  els.chordQualityButtons.innerHTML = Object.keys(CHORD_QUALITIES[els.chordTypeSelect.value])
+    .map(
+      (quality) =>
+        `<button class="mini-button ${quality === els.chordSelect.value ? "active" : ""}" data-chord-quality="${quality}" type="button">${CHORD_QUALITY_LABELS[quality]}</button>`
+    )
+    .join("");
+}
+
 function init() {
   fillSelect(els.keySelect, NOTES_SHARP, "C");
   fillSelect(els.modeSelect, Object.keys(MODES), "Mixolydian");
@@ -414,9 +461,37 @@ function init() {
 
   els.chordTypeSelect.addEventListener("change", () => {
     syncChordQualityOptions();
+    renderChordButtonControls();
     render();
   });
-  els.chordSelect.addEventListener("change", render);
+  els.chordSelect.addEventListener("change", () => {
+    renderChordButtonControls();
+    render();
+  });
+
+  els.chordButtonControls.addEventListener("click", (event) => {
+    const keyButton = event.target.closest("[data-chord-key]");
+    const typeButton = event.target.closest("[data-chord-type]");
+    const qualityButton = event.target.closest("[data-chord-quality]");
+
+    if (keyButton) {
+      els.keySelect.value = keyButton.dataset.chordKey;
+    }
+
+    if (typeButton) {
+      els.chordTypeSelect.value = typeButton.dataset.chordType;
+      syncChordQualityOptions();
+    }
+
+    if (qualityButton) {
+      els.chordSelect.value = qualityButton.dataset.chordQuality;
+    }
+
+    if (keyButton || typeButton || qualityButton) {
+      renderChordButtonControls();
+      render();
+    }
+  });
 
   els.showButton.addEventListener("click", () => {
     if (getActiveView() === "progressions") {
@@ -452,6 +527,7 @@ function init() {
       renderCustomProgressionBuilder(getProgressionScaleChords(NOTE_TO_PC[els.keySelect.value], els.keySelect.value));
     }
 
+    renderChordButtonControls();
     render();
   });
   els.showNoteNames.addEventListener("change", render);
@@ -483,6 +559,7 @@ function init() {
   });
 
   updateHeaderControls("scales");
+  renderChordButtonControls();
   render();
 }
 
@@ -491,10 +568,12 @@ function updateHeaderControls(view) {
   const isScales = view === "scales";
   const isChords = view === "chords";
 
+  els.keyControl.classList.toggle("is-hidden", isChords);
   els.modeControl.classList.toggle("is-hidden", !isScales);
   els.scaleStringControl.classList.toggle("is-hidden", !isScales);
-  els.chordTypeControl.classList.toggle("is-hidden", !isChords);
-  els.chordControl.classList.toggle("is-hidden", !isChords);
+  els.chordTypeControl.classList.add("is-hidden");
+  els.chordControl.classList.add("is-hidden");
+  els.chordButtonControls.classList.toggle("is-hidden", !isChords);
   els.chordStringControl.classList.toggle("is-hidden", !isChords);
   els.chordDisplayControl.classList.toggle("is-hidden", !isChords);
   els.scaleDisplayControl.classList.toggle("is-hidden", !isScales);
@@ -503,6 +582,7 @@ function updateHeaderControls(view) {
   els.customProgressionBuilder.classList.toggle("is-hidden", !(isProgressions && els.progressionSourceSelect.value === "custom"));
   els.sequencerPanel.classList.toggle("is-hidden", !isProgressions);
   els.topbar.classList.toggle("progression-mode", isProgressions);
+  els.topbar.classList.toggle("chord-mode", isChords);
 
   if (isScales) {
     els.showScale.checked = true;
@@ -514,6 +594,7 @@ function updateHeaderControls(view) {
     els.showScale.checked = false;
     els.showChord.checked = true;
     els.showIntervals.checked = false;
+    renderChordButtonControls();
   }
 
   if (isProgressions) {

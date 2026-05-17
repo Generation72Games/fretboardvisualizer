@@ -79,6 +79,10 @@ select {
   grid-template-columns: minmax(220px, 1.1fr) repeat(4, minmax(130px, 0.72fr)) minmax(170px, 0.8fr) minmax(210px, 1fr) auto;
 }
 
+.topbar.chord-mode {
+  grid-template-columns: minmax(220px, 1.1fr) minmax(620px, 2fr) minmax(170px, 0.8fr) auto;
+}
+
 .brand {
   min-height: 72px;
   display: flex;
@@ -132,6 +136,59 @@ h3 {
   align-self: center;
   color: #c6ccd1;
   font-size: 0.9rem;
+}
+
+.chord-button-controls {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto minmax(280px, 1.15fr);
+  gap: 18px;
+  align-items: end;
+}
+
+.button-control {
+  display: grid;
+  gap: 8px;
+}
+
+.button-control span {
+  color: #c6ccd1;
+  font-size: 0.95rem;
+}
+
+.mini-button-row,
+.mini-button-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.key-button-grid {
+  max-width: 290px;
+}
+
+.quality-button-grid {
+  max-width: 380px;
+}
+
+.mini-button {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid #39454d;
+  border-radius: 999px;
+  background: #0a0f12;
+  color: var(--text);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.mini-button:hover {
+  border-color: #59656d;
+}
+
+.mini-button.active {
+  color: #11181c;
+  border-color: #ff9a35;
+  background: linear-gradient(180deg, #ffab52, #ff7a18);
 }
 
 .option-group label {
@@ -850,8 +907,13 @@ input[type="range"] {
 
 @media (max-width: 1180px) {
   .topbar,
-  .topbar.progression-mode {
+  .topbar.progression-mode,
+  .topbar.chord-mode {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .chord-button-controls {
+    grid-column: span 2;
   }
 
   .brand {
@@ -902,9 +964,15 @@ input[type="range"] {
   }
 
   .topbar,
-  .topbar.progression-mode {
+  .topbar.progression-mode,
+  .topbar.chord-mode {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+
+  .chord-button-controls {
+    grid-column: auto;
+    grid-template-columns: 1fr;
   }
 
   .workspace {
