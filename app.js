@@ -392,18 +392,31 @@ function fillSelect(select, values, selectedValue) {
     .join("");
 }
 
+function getDefaultChordQuality(chordType) {
+  return chordType === "triad" ? "Major" : Object.keys(CHORD_QUALITIES[chordType])[0];
+}
+
+function syncChordQualityOptions() {
+  const chordType = els.chordTypeSelect.value;
+  const qualities = Object.keys(CHORD_QUALITIES[chordType]);
+  const selectedQuality = qualities.includes(els.chordSelect.value)
+    ? els.chordSelect.value
+    : getDefaultChordQuality(chordType);
+
+  fillSelect(els.chordSelect, qualities, selectedQuality);
+}
+
 function init() {
   fillSelect(els.keySelect, NOTES_SHARP, "C");
   fillSelect(els.modeSelect, Object.keys(MODES), "Mixolydian");
-  fillSelect(els.chordSelect, Object.keys(CHORD_QUALITIES.triad), "Major");
+  syncChordQualityOptions();
   fillSelect(els.sequenceSelect, Object.keys(SEQUENCES), "I - bVII - IV");
 
   els.chordTypeSelect.addEventListener("change", () => {
-    const qualities = Object.keys(CHORD_QUALITIES[els.chordTypeSelect.value]);
-    const defaultQuality = els.chordTypeSelect.value === "triad" ? "Major" : qualities[0];
-    fillSelect(els.chordSelect, qualities, defaultQuality);
+    syncChordQualityOptions();
     render();
   });
+  els.chordSelect.addEventListener("change", render);
 
   els.showButton.addEventListener("click", () => {
     if (getActiveView() === "progressions") {
@@ -516,13 +529,16 @@ function getState() {
   const activeView = getActiveView();
   const scaleIntervals = MODES[els.modeSelect.value];
   const chordType = els.chordTypeSelect.value;
+  const selectedChordQuality = CHORD_QUALITIES[chordType][els.chordSelect.value]
+    ? els.chordSelect.value
+    : getDefaultChordQuality(chordType);
   const activeProgressionChord = getActiveProgressionChord();
   const chordIntervals =
     activeView === "progressions" && activeProgressionChord
       ? CHORD_QUALITIES.triad[activeProgressionChord.quality]
       : activeView === "progressions"
         ? []
-      : CHORD_QUALITIES[chordType][els.chordSelect.value];
+      : CHORD_QUALITIES[chordType][selectedChordQuality];
   const chordRootPc = activeView === "progressions" && activeProgressionChord ? activeProgressionChord.rootPc : keyPc;
   const showIntervals = activeView === "scales" ? els.showIntervalsTop.checked : els.showIntervals.checked;
   const showNoteNames = activeView === "scales" ? els.showNoteNames.checked : true;
@@ -543,7 +559,7 @@ function getState() {
     modeName: els.modeSelect.value,
     scaleName: els.modeSelect.value,
     chordType,
-    chordName: activeView === "progressions" && activeProgressionChord ? activeProgressionChord.quality : els.chordSelect.value,
+    chordName: activeView === "progressions" && activeProgressionChord ? activeProgressionChord.quality : selectedChordQuality,
     activeProgressionChord,
     sequenceName: els.sequenceSelect.value,
     fretCount: Number(els.fretCountSelect.value),
